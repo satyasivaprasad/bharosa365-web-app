@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidAffiliateData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['firstName', 'lastName', 'phoneNumber', 'email', 'address', 'companyName', 'createdAt', 'updatedAt', 'isActive']) &&
+             data.firstName is string &&
+             data.lastName is string &&
+             data.phoneNumber is string &&
+             data.email is string &&
+             data.address is map &&
+             data.address.keys().hasAll(['village', 'mandal', 'city', 'state']) &&
+             data.companyName is string &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp &&
+             data.isActive is bool &&
+             data.email.matches('.*@.*\\..*') &&
+             data.phoneNumber.matches('\\+91[0-9]{10}');
+    }
+    
+    function isValidUpdate() {
+      let data = request.resource.data;
+      return data.diff(resource.data).affectedKeys().hasOnly(['firstName', 'lastName', 'email', 'address', 'companyName', 'updatedAt']) &&
+             data.updatedAt is timestamp;
+    }
+    
+    // Affiliate collection - Main user data
+    match /affiliate/{userId} {
+      // Allow read only for the authenticated user's own document
+      allow read: if isAuthenticated() && isOwner(userId);
+      
+      // Allow create only once after phone authentication
+      allow create: if isAuthenticated() 
+                    && isOwner(userId)
+                    && isValidAffiliateData()
+                    && request.resource.data.phoneNumber == request.auth.token.phone_number;
+      
+      // Allow update only by the owner with valid data
+      allow update: if isAuthenticated() 
+                    && isOwner(userId)
+                    && isValidUpdate();
+      
+      // Deny delete for safety
+      allow delete: if false;
+    }
+    
+    // User profiles collection (optional extended data)
+    match /user_profiles/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Audit logs collection (optional)
+    match /audit_logs/{logId} {
+      // Only allow creation of audit logs
+      allow create: if isAuthenticated();
+      
+      // Allow users to read their own audit logs
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // No updates or deletes allowed
+      allow update, delete: if false;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

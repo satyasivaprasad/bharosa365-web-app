@@ -1,0 +1,459 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #E0F7FA 0%, #B2DFDB 25%, #80CBC4 50%, #4DB6AC 75%, #26A69A 100%);
+    min-height: 100vh;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #004D40 0%, #26A69A 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.card-header .logo {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-header .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.card-header .brand-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.card-header p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Form Styles */
+.signup-form {
+    padding: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.section-title i {
+    color: #26A69A;
+    font-size: 1.1rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #26A69A;
+    box-shadow: 0 0 0 3px rgba(38, 166, 154, 0.1);
+}
+
+.phone-input-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.phone-input-container select {
+    flex: 0 0 100px;
+}
+
+.phone-input-container input {
+    flex: 1;
+}
+
+/* Button Styles */
+.btn-primary,
+.btn-secondary,
+.btn-otp {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #004D40 0%, #26A69A 100%);
+    color: white;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(38, 166, 154, 0.3);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: #f5f5f5;
+    color: #333;
+    border: 2px solid #e0e0e0;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+.btn-otp {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.btn-otp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+/* Verification Section */
+.verification-section {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    align-items: center;
+}
+
+.verification-section input {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+/* Checkbox Styles */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #26A69A;
+}
+
+.checkbox-group label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.link {
+    color: #26A69A;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #26A69A;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #4caf50;
+    margin-bottom: 1rem;
+}
+
+.modal-body p {
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 400px;
+    z-index: 3000;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    border-left: 4px solid #4caf50;
+}
+
+.notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.notification i {
+    font-size: 1.2rem;
+}
+
+.notification.success i {
+    color: #4caf50;
+}
+
+.notification.error i {
+    color: #f44336;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    margin-left: auto;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: #004D40;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .brand-name {
+        font-size: 2rem;
+    }
+    
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .signup-form {
+        padding: 1.5rem;
+    }
+    
+    .card-header {
+        padding: 1.5rem;
+    }
+    
+    .phone-input-container {
+        flex-direction: column;
+    }
+    
+    .phone-input-container select {
+        flex: none;
+    }
+    
+    .verification-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-name {
+        font-size: 1.5rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .signup-form {
+        padding: 1rem;
+    }
+    
+    .card-header {
+        padding: 1rem;
+    }
+}
