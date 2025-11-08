@@ -177,7 +177,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
        <div className="logo">
           <img src="/splash.png" alt="bharosa365 Logo" />
         </div>
-        <div className="brand-name">bharosa365</div>
+        <div className="brand-name">Bharosa365</div>
        
         <h2>Complete Registration</h2>
         <p>Fill in your details to get started</p>

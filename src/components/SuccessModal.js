@@ -23,7 +23,7 @@ const SuccessModal = ({ isVisible, onClose, userData }) => {
         
         <div className="modal-body">
           <p>
-            Welcome to bharosa365, {userData?.firstName}! 
+            Welcome to Bharosa365, {userData?.firstName}! 
             Your account has been created successfully.
           </p>
           

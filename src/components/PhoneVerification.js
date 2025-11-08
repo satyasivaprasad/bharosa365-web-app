@@ -107,7 +107,7 @@ const PhoneVerification = ({ onVerificationSuccess }) => {
         <div className="logo">
           <img src="/splash.png" alt="bharosa365 Logo" />
         </div>
-        <div className="brand-name">bharosa365</div>
+        <div className="brand-name">Bharosa365</div>
         <p style={{ fontSize: '0.95rem', marginTop: '0.5rem', marginBottom: '1.5rem', opacity: '0.95' }}>
           Smart, Private & Trusted Fraud Alerts. Protect yourself with bharosa365's scam protection app!
         </p>
