@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
+import { stateCitiesMap } from '../utils/stateCitiesData';
 
 const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
   const [formData, setFormData] = useState({
@@ -8,9 +9,10 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     lastName: '',
     phoneNumber: phoneNumber || '',
     email: '',
+    password: '',
     address: {
-      village: '',
-      mandal: '',
+    //  village: '',
+    //  mandal: '',
       city: '',
       state: ''
     },
@@ -35,13 +37,26 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
+      
+      // Reset city when state changes
+      if (child === 'state') {
+        setFormData(prev => ({
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value,
+            city: '' // Reset city when state changes
+          }
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value
+          }
+        }));
+      }
     } else {
       setFormData(prev => ({
         ...prev,
@@ -50,15 +65,20 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     }
   };
 
+  // Get cities for the selected state
+  const availableCities = formData.address.state ? stateCitiesMap[formData.address.state] || [] : [];
+
   const validateForm = () => {
-    const { firstName, lastName, email, address, companyName, acceptTerms } = formData;
+    const { firstName, lastName, email, password, address, companyName, acceptTerms } = formData;
     
     if (!firstName.trim()) return 'First name is required';
     if (!lastName.trim()) return 'Last name is required';
     if (!email.trim()) return 'Email is required';
     if (!email.includes('@')) return 'Please enter a valid email';
-    if (!address.village.trim()) return 'Village is required';
-    if (!address.mandal.trim()) return 'Mandal is required';
+    if (!password.trim()) return 'Password is required';
+    if (password.length < 6) return 'Password must be at least 6 characters';
+   // if (!address.village.trim()) return 'Village is required';
+   // if (!address.mandal.trim()) return 'Mandal is required';
     if (!address.city.trim()) return 'City is required';
     if (!address.state) return 'State is required';
     if (!companyName.trim()) return 'Company name is required';
@@ -86,9 +106,10 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
         lastName: formData.lastName.trim(),
         phoneNumber: formData.phoneNumber,
         email: formData.email.trim().toLowerCase(),
+        password: formData.password,
         address: {
-          village: formData.address.village.trim(),
-          mandal: formData.address.mandal.trim(),
+       //   village: formData.address.village.trim(),
+       //   mandal: formData.address.mandal.trim(),
           city: formData.address.city.trim(),
           state: formData.address.state
         },
@@ -101,6 +122,57 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       await setDoc(doc(db, 'affiliate', user.uid), userDoc);
       
       console.log('User registered successfully');
+      
+      // Save data to TapAffiliate
+      try {
+        const tapAffiliateResponse = await fetch('https://asia-south1-weprotect-dfcd7.cloudfunctions.net/createandenrollaffiliate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstname: formData.firstName.trim(),
+            lastname: formData.lastName.trim(),
+            email: formData.email.trim().toLowerCase(),
+            password: formData.password,
+            phoneNumber: formData.phoneNumber,
+            programId: 'findvend-solutions',
+            company: {
+              name: formData.companyName.trim(),
+              description: `Affiliate from ${formData.address.city.trim()}, ${formData.address.state.trim()}`
+            },
+            address: {
+            //  address: `${formData.address.village.trim()}, ${formData.address.mandal.trim()}`,
+              address: 'address',
+              postal_code: '000000', // Add postal code field if needed
+              city: formData.address.city.trim(),
+              state: formData.address.state.trim(),
+              country: {
+                code: 'IN',
+                name: 'India'
+              }
+            }
+          })
+        });
+
+        const tapAffiliateData = await tapAffiliateResponse.json();
+        
+        if (tapAffiliateData.success) {
+          console.log('TapAffiliate created successfully:', tapAffiliateData);
+          // Add referral link to user document
+          userDoc.referralLink = tapAffiliateData.data.referralLink;
+          userDoc.affiliateId = tapAffiliateData.data.affiliateId;
+          
+          // Update Firestore with referral link
+          await setDoc(doc(db, 'affiliate', user.uid), userDoc);
+        } else {
+          console.error('TapAffiliate creation failed:', tapAffiliateData);
+        }
+      } catch (tapError) {
+        console.error('Error creating TapAffiliate:', tapError);
+        // Continue even if TapAffiliate fails
+      }
+      
       onRegistrationComplete(userDoc);
       
     } catch (error) {
@@ -109,6 +181,9 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     } finally {
       setLoading(false);
     }
+
+    //save the data to tapaffiliate also
+
   };
 
   return (
@@ -121,10 +196,11 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       )}
       
       <div className="card-header">
-        <div className="logo">
-          <div style={{ fontSize: '24px', color: '#26A69A', fontWeight: 'bold' }}>B365</div>
+       <div className="logo">
+          <img src="/splash.png" alt="bharosa365 Logo" />
         </div>
         <div className="brand-name">Bharosa365</div>
+       
         <h2>Complete Registration</h2>
         <p>Fill in your details to get started</p>
       </div>
@@ -134,13 +210,13 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           {/* Personal Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>👤</span>
+              <span className="section-icon">👤</span>
               Personal Information
             </div>
             
             <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="firstName">First Name *</label>
+                <label htmlFor="firstName">First Name <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="firstName"
@@ -153,7 +229,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="lastName">Last Name *</label>
+                <label htmlFor="lastName">Last Name <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="lastName"
@@ -178,7 +254,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
+                <label htmlFor="email">Email Address <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="email"
                   id="email"
@@ -189,19 +265,33 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
                   required
                 />
               </div>
+              
+              <div className="form-group">
+                <label htmlFor="password">Password <span style={{ color: '#f50606' }}>*</span></label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Enter your password (min 6 characters)"
+                  required
+                  minLength="6"
+                />
+              </div>
             </div>
           </div>
 
           {/* Address Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>📍</span>
+              <span className="section-icon">📍</span>
               Address Details
             </div>
             
             <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="village">Village *</label>
+             {/*  <div className="form-group">
+                <label htmlFor="village">Village <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="village"
@@ -214,7 +304,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="mandal">Mandal *</label>
+                <label htmlFor="mandal">Mandal <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="mandal"
@@ -224,23 +314,10 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
                   placeholder="Enter your mandal"
                   required
                 />
-              </div>
+              </div> */}
               
-              <div className="form-group">
-                <label htmlFor="city">City *</label>
-                <input
-                  type="text"
-                  id="city"
-                  name="address.city"
-                  value={formData.address.city}
-                  onChange={handleInputChange}
-                  placeholder="Enter your city"
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="state">State *</label>
+             <div className="form-group">
+                <label htmlFor="state">State <span style={{ color: '#f50606' }}>*</span></label>
                 <select
                   id="state"
                   name="address.state"
@@ -254,18 +331,38 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
                   ))}
                 </select>
               </div>
+
+               <div className="form-group">
+                <label htmlFor="city">City <span style={{ color: '#f50606' }}>*</span></label>
+                <select
+                  id="city"
+                  name="address.city"
+                  value={formData.address.city}
+                  onChange={handleInputChange}
+                  required
+                  disabled={!formData.address.state}
+                >
+                  <option value="">
+                    {formData.address.state ? 'Select your city' : 'Select state first'}
+                  </option>
+                  {availableCities.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+              
             </div>
           </div>
 
           {/* Company Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>🏢</span>
+              <span className="section-icon">🏢</span>
               Company Information
             </div>
             
             <div className="form-group">
-              <label htmlFor="companyName">Company Name *</label>
+              <label htmlFor="companyName">Company Name <span style={{ color: '#f50606' }}>*</span></label>
               <input
                 type="text"
                 id="companyName"

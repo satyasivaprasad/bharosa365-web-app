@@ -89,7 +89,7 @@ function App() {
       </div>
       
       <div className="footer">
-        <p>© 2024 Bharosa365. All rights reserved.</p>
+        <p>© 2024 Bharosa365 - Smart Scam Protection. All rights reserved.</p>
         <p>Secure registration with Firebase Authentication</p>
       </div>
     </div>
