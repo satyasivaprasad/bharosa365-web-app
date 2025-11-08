@@ -83,18 +83,18 @@ const SuccessModal = ({ isVisible, onClose, userData }) => {
             </div>
           )}
           
-          <p style={{ marginTop: '1rem' }}>
+        {/*  <p style={{ marginTop: '1rem' }}>
             You can now access your dashboard and start exploring our services.
-          </p>
+          </p> */}
         </div>
         
-        <button 
+      {/*   <button 
           className="btn-primary" 
           onClick={onClose}
           style={{ width: '100%', marginTop: '1rem' }}
         >
           Continue to Dashboard
-        </button>
+        </button> */}
       </div>
     </div>
   );
