@@ -101,6 +101,56 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       await setDoc(doc(db, 'affiliate', user.uid), userDoc);
       
       console.log('User registered successfully');
+      
+      // Save data to TapAffiliate
+      try {
+        const tapAffiliateResponse = await fetch('https://asia-south1-weprotect-dfcd7.cloudfunctions.net/createandenrollaffiliate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstname: formData.firstName.trim(),
+            lastname: formData.lastName.trim(),
+            email: formData.email.trim().toLowerCase(),
+            password: 'TempPass123!', // You may want to generate a random password
+            phoneNumber: formData.phoneNumber,
+            programId: 'findvend-solutions',
+            company: {
+              name: formData.companyName.trim(),
+              description: `Affiliate from ${formData.address.city.trim()}, ${formData.address.state.trim()}`
+            },
+            address: {
+              address: `${formData.address.village.trim()}, ${formData.address.mandal.trim()}`,
+              postal_code: '000000', // Add postal code field if needed
+              city: formData.address.city.trim(),
+              state: formData.address.state.trim(),
+              country: {
+                code: 'IN',
+                name: 'India'
+              }
+            }
+          })
+        });
+
+        const tapAffiliateData = await tapAffiliateResponse.json();
+        
+        if (tapAffiliateData.success) {
+          console.log('TapAffiliate created successfully:', tapAffiliateData);
+          // Add referral link to user document
+          userDoc.referralLink = tapAffiliateData.data.referralLink;
+          userDoc.affiliateId = tapAffiliateData.data.affiliateId;
+          
+          // Update Firestore with referral link
+          await setDoc(doc(db, 'affiliate', user.uid), userDoc);
+        } else {
+          console.error('TapAffiliate creation failed:', tapAffiliateData);
+        }
+      } catch (tapError) {
+        console.error('Error creating TapAffiliate:', tapError);
+        // Continue even if TapAffiliate fails
+      }
+      
       onRegistrationComplete(userDoc);
       
     } catch (error) {
@@ -109,6 +159,9 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     } finally {
       setLoading(false);
     }
+
+    //save the data to tapaffiliate also
+
   };
 
   return (
@@ -121,10 +174,11 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       )}
       
       <div className="card-header">
-        <div className="logo">
-          <div style={{ fontSize: '24px', color: '#26A69A', fontWeight: 'bold' }}>B365</div>
+       <div className="logo">
+          <img src="/splash.png" alt="bharosa365 Logo" />
         </div>
-        <div className="brand-name">Bharosa365</div>
+        <div className="brand-name">bharosa365</div>
+       
         <h2>Complete Registration</h2>
         <p>Fill in your details to get started</p>
       </div>
@@ -134,13 +188,13 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           {/* Personal Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>👤</span>
+              <span className="section-icon">👤</span>
               Personal Information
             </div>
             
             <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="firstName">First Name *</label>
+                <label htmlFor="firstName">First Name <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="firstName"
@@ -153,7 +207,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="lastName">Last Name *</label>
+                <label htmlFor="lastName">Last Name <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="lastName"
@@ -178,7 +232,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
+                <label htmlFor="email">Email Address <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="email"
                   id="email"
@@ -195,13 +249,13 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           {/* Address Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>📍</span>
+              <span className="section-icon">📍</span>
               Address Details
             </div>
             
             <div className="form-grid">
               <div className="form-group">
-                <label htmlFor="village">Village *</label>
+                <label htmlFor="village">Village <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="village"
@@ -214,7 +268,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="mandal">Mandal *</label>
+                <label htmlFor="mandal">Mandal <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="mandal"
@@ -227,7 +281,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="city">City *</label>
+                <label htmlFor="city">City <span style={{ color: '#f50606' }}>*</span></label>
                 <input
                   type="text"
                   id="city"
@@ -240,7 +294,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="state">State *</label>
+                <label htmlFor="state">State <span style={{ color: '#f50606' }}>*</span></label>
                 <select
                   id="state"
                   name="address.state"
@@ -260,12 +314,12 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           {/* Company Information */}
           <div className="form-section">
             <div className="section-title">
-              <span>🏢</span>
+              <span className="section-icon">🏢</span>
               Company Information
             </div>
             
             <div className="form-group">
-              <label htmlFor="companyName">Company Name *</label>
+              <label htmlFor="companyName">Company Name <span style={{ color: '#f50606' }}>*</span></label>
               <input
                 type="text"
                 id="companyName"

@@ -105,9 +105,12 @@ const PhoneVerification = ({ onVerificationSuccess }) => {
       
       <div className="card-header">
         <div className="logo">
-          <div style={{ fontSize: '24px', color: '#26A69A', fontWeight: 'bold' }}>B365</div>
+          <img src="/splash.png" alt="bharosa365 Logo" />
         </div>
-        <div className="brand-name">Bharosa365</div>
+        <div className="brand-name">bharosa365</div>
+        <p style={{ fontSize: '0.95rem', marginTop: '0.5rem', marginBottom: '1.5rem', opacity: '0.95' }}>
+          Smart, Private & Trusted Fraud Alerts. Protect yourself with bharosa365's scam protection app!
+        </p>
         <h2>Phone Verification</h2>
         <p>Enter your mobile number to get started</p>
       </div>
@@ -117,12 +120,12 @@ const PhoneVerification = ({ onVerificationSuccess }) => {
           <form onSubmit={sendOTP}>
             <div className="form-section">
               <div className="section-title">
-                <span>📱</span>
-                Mobile Number
+                <span className="section-icon">📱</span>
+                <span>Mobile Number</span>
               </div>
               
               <div className="form-group">
-                <label htmlFor="phone">Phone Number</label>
+                <label htmlFor="phone">Enter mobile number</label>
                 <div className="phone-input-container">
                   <select value="+91" disabled>
                     <option value="+91">+91</option>
@@ -149,8 +152,8 @@ const PhoneVerification = ({ onVerificationSuccess }) => {
           <form onSubmit={verifyOTP}>
             <div className="form-section">
               <div className="section-title">
-                <span>🔐</span>
-                Verify OTP
+                <span className="section-icon">🔐</span>
+                <span>Verify OTP</span>
               </div>
               
               <div className="form-group">
