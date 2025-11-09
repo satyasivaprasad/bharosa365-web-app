@@ -165,15 +165,30 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           
           // Update Firestore with referral link
           await setDoc(doc(db, 'affiliate', user.uid), userDoc);
+          
+          // Only call success callback if TapAffiliate was successful
+          onRegistrationComplete(userDoc);
         } else {
           console.error('TapAffiliate creation failed:', tapAffiliateData);
+          
+          // Extract error message from TapAffiliate response
+          let errorMessage = 'Failed to complete affiliate registration.';
+          if (tapAffiliateData.message && tapAffiliateData.message.errors && tapAffiliateData.message.errors.length > 0) {
+            errorMessage = tapAffiliateData.message.errors[0].message;
+          } else if (tapAffiliateData.error) {
+            errorMessage = tapAffiliateData.error;
+          }
+          
+          setError(errorMessage);
+          setLoading(false);
+          return;
         }
       } catch (tapError) {
         console.error('Error creating TapAffiliate:', tapError);
-        // Continue even if TapAffiliate fails
+        setError('Failed to connect to affiliate service. Please try again.');
+        setLoading(false);
+        return;
       }
-      
-      onRegistrationComplete(userDoc);
       
     } catch (error) {
       console.error('Error saving user data:', error);
@@ -197,7 +212,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       
       <div className="card-header">
        <div className="logo">
-          <img src="/splash.png" alt="bharosa365 Logo" />
+          <img src="/splash.png" alt="Bharosa365 Logo" />
         </div>
         <div className="brand-name">Bharosa365</div>
        
