@@ -16,7 +16,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       city: '',
       state: ''
     },
-    companyName: '',
+    occupation: '',
     acceptTerms: false
   });
   const [loading, setLoading] = useState(false);
@@ -69,8 +69,8 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
   const availableCities = formData.address.state ? stateCitiesMap[formData.address.state] || [] : [];
 
   const validateForm = () => {
-    const { firstName, lastName, email, password, address, companyName, acceptTerms } = formData;
-    
+    const { firstName, lastName, email, password, address, occupation, acceptTerms } = formData;
+
     if (!firstName.trim()) return 'First name is required';
     if (!lastName.trim()) return 'Last name is required';
     if (!email.trim()) return 'Email is required';
@@ -81,9 +81,9 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
    // if (!address.mandal.trim()) return 'Mandal is required';
     if (!address.city.trim()) return 'City is required';
     if (!address.state) return 'State is required';
-    if (!companyName.trim()) return 'Company name is required';
+    if (!occupation) return 'Occupation is required';
     if (!acceptTerms) return 'Please accept the terms and conditions';
-    
+
     return null;
   };
 
@@ -113,7 +113,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           city: formData.address.city.trim(),
           state: formData.address.state
         },
-        companyName: formData.companyName.trim(),
+        occupation: formData.occupation,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         isActive: true
@@ -136,9 +136,9 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
             email: formData.email.trim().toLowerCase(),
             password: formData.password,
             phoneNumber: formData.phoneNumber,
-            programId: 'findvend-solutions',
+            programId: 'bharosa-affiliate-onboarding',
             company: {
-              name: formData.companyName.trim(),
+              name: formData.occupation,
               description: `Affiliate from ${formData.address.city.trim()}, ${formData.address.state.trim()}`
             },
             address: {
@@ -354,24 +354,29 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
             </div>
           </div>
 
-          {/* Company Information */}
+          {/* Occupation Information */}
           <div className="form-section">
             <div className="section-title">
-              <span className="section-icon">🏢</span>
-              Company Information
+              <span className="section-icon">💼</span>
+              Occupation
             </div>
-            
+
             <div className="form-group">
-              <label htmlFor="companyName">Company Name <span style={{ color: '#f50606' }}>*</span></label>
-              <input
-                type="text"
-                id="companyName"
-                name="companyName"
-                value={formData.companyName}
+              <label htmlFor="occupation">Select Your Occupation <span style={{ color: '#f50606' }}>*</span></label>
+              <select
+                id="occupation"
+                name="occupation"
+                value={formData.occupation}
                 onChange={handleInputChange}
-                placeholder="Enter your company name"
                 required
-              />
+              >
+                <option value="">Select your occupation</option>
+                <option value="Cable Operator">Cable Operator</option>
+                <option value="Student">Student</option>
+                <option value="Insurance Agent">Insurance Agent</option>
+                <option value="Freelancer">Freelancer</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
           </div>
 
