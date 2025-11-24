@@ -17,6 +17,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
       state: ''
     },
     occupation: '',
+    upiId: '',
     acceptTerms: false
   });
   const [loading, setLoading] = useState(false);
@@ -68,8 +69,16 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
   // Get cities for the selected state
   const availableCities = formData.address.state ? stateCitiesMap[formData.address.state] || [] : [];
 
+  // UPI ID validation regex pattern
+  const upiIdPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+
+  const validateUpiId = (upiId) => {
+    if (!upiId.trim()) return false;
+    return upiIdPattern.test(upiId);
+  };
+
   const validateForm = () => {
-    const { firstName, lastName, email, password, address, occupation, acceptTerms } = formData;
+    const { firstName, lastName, email, password, address, occupation, upiId, acceptTerms } = formData;
 
     if (!firstName.trim()) return 'First name is required';
     if (!lastName.trim()) return 'Last name is required';
@@ -82,6 +91,8 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
     if (!address.city.trim()) return 'City is required';
     if (!address.state) return 'State is required';
     if (!occupation) return 'Occupation is required';
+    if (!upiId.trim()) return 'UPI ID is required';
+    if (!validateUpiId(upiId)) return 'Please enter a valid UPI ID (e.g., name@upi)';
     if (!acceptTerms) return 'Please accept the terms and conditions';
 
     return null;
@@ -114,6 +125,7 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
           state: formData.address.state
         },
         occupation: formData.occupation,
+        upiId: formData.upiId.trim(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         isActive: true
@@ -375,8 +387,34 @@ const RegistrationForm = ({ user, phoneNumber, onRegistrationComplete }) => {
                 <option value="Student">Student</option>
                 <option value="Insurance Agent">Insurance Agent</option>
                 <option value="Freelancer">Freelancer</option>
+                <option value="Photographer">Photographer</option>
                 <option value="Others">Others</option>
               </select>
+            </div>
+          </div>
+
+          {/* Payment Information */}
+          <div className="form-section">
+            <div className="section-title">
+              <span className="section-icon">💳</span>
+              Payment Details
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="upiId">UPI ID <span style={{ color: '#f50606' }}>*</span></label>
+              <input
+                type="text"
+                id="upiId"
+                name="upiId"
+                value={formData.upiId}
+                onChange={handleInputChange}
+                placeholder="Enter your UPI ID (e.g., name@upi)"
+                pattern="^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$"
+                required
+              />
+              <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>
+                Format: username@bankname (e.g., example@paytm, name@ybl)
+              </small>
             </div>
           </div>
 
